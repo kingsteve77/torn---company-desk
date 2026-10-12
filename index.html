@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Company Desk">
+<meta name="theme-color" content="#0d131a">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAABv0lEQVR42u3XQQoAEBBAURewsnMZJ3cQt3EBZSNNvPr7KfMKKZcqLUuOQHAIDsEhOASH4BAcgkNwCA4JDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITgkOASH4BAcgkNwCA7BITi0rY1+KjjggAMOOASH4BAcggMOOOCAAw444IADDjjggAMOOOAQHIJDcMABBxxwwAEHHHDAAQcccMABBxyCQ3AIDsEBBxxwxFgVHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHD8syo44IADDjjggAMOOOCAAw4T4YADDjjggAMOOOCAAw444IADDjjggAMOOOCAAw444IADDjjggMOq4IADDjjggAMOOOCAAw444IADDjjggAMOOKwKDjjggAMOOOCAAw444IDDRDjggAMOOOCAAw449F5wCA7FxHHw6tXNhwgccMABBxxwwCE49DwO+coKDsEhwSE4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIDsEhOASH4JDgEByCQ3AIDsVoAtbGuaof4eprAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAABv0lEQVR42u3XQQoAEBBAURewsnMZJ3cQt3EBZSNNvPr7KfMKKZcqLUuOQHAIDsEhOASH4BAcgkNwCA4JDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITgkOASH4BAcgkNwCA7BITi0rY1+KjjggAMOOASH4BAcggMOOOCAAw444IADDjjggAMOOOAQHIJDcMABBxxwwAEHHHDAAQcccMABBxyCQ3AIDsEBBxxwxFgVHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHD8syo44IADDjjggAMOOOCAAw4T4YADDjjggAMOOOCAAw444IADDjjggAMOOOCAAw444IADDjjggMOq4IADDjjggAMOOOCAAw444IADDjjggAMOOKwKDjjggAMOOOCAAw444IDDRDjggAMOOOCAAw449F5wCA7FxHHw6tXNhwgccMABBxxwwCE49DwO+coKDsEhwSE4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIDsEhOASH4JDgEByCQ3AIDsVoAtbGuaof4eprAAAAAElFTkSuQmCC">
+<style>body{margin:0}[hidden]{display:none!important}:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px)}</style>
+<title>Torn Company Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column, bottom tab bar. Company / Team / Me / Plan. Numbers in mono, headings in Archivo. */
+:root {
+  --bg: #eceff2;
+  --surface: #ffffff;
+  --surface2: #e4e9ee;
+  --ink: #131c25;
+  --muted: #566574;
+  --line: #cfd7de;
+  --accent: #0a7466;
+  --accent-ink: #ffffff;
+  --good: #1b7a3a;
+  --warn: #a15c07;
+  --bad: #b3261e;
+  --font-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151d26; --surface2: #1d2833; --ink: #e5ecf2; --muted: #92a2b0;
+    --line: #28343f; --accent: #3fd9bd; --accent-ink: #06231d; --good: #5fd18a; --warn: #f0b04a; --bad: #ff8077;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151d26; --surface2: #1d2833; --ink: #e5ecf2; --muted: #92a2b0;
+  --line: #28343f; --accent: #3fd9bd; --accent-ink: #06231d; --good: #5fd18a; --warn: #f0b04a; --bad: #ff8077;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; padding-inline: 16px; padding-block: 16px 96px; }
+main { max-width: 720px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: 26px; font-weight: 800; }
+h2 { font-size: 20px; font-weight: 800; }
+h3 { font-size: 15px; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+header { display: flex; flex-direction: column; gap: 4px; max-width: 720px; margin-inline: auto; margin-bottom: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.banner { background: var(--surface2); border: 1px dashed var(--line); border-radius: 10px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.banner p { flex: 1 1 220px; min-width: 0; }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.kpi { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kpi .v { font-family: var(--font-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kpi.big .v { font-size: 28px; }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+input, select, textarea, button { font: inherit; color: inherit; }
+input, select, textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
+input[type="range"] { padding: 0; accent-color: var(--accent); }
+textarea { font-family: var(--font-mono); font-size: 12px; min-height: 96px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { cursor: pointer; border-radius: 8px; border: 1px solid var(--line); background: var(--surface2); padding: 10px 14px; font-weight: 600; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.link { background: none; border: none; color: var(--accent); padding: 4px 0; text-decoration: underline; }
+.btn { display: inline-block; text-decoration: none; border-radius: 8px; background: var(--accent); color: var(--accent-ink); padding: 10px 14px; font-weight: 600; }
+.btn.alt { background: var(--surface2); color: var(--ink); border: 1px solid var(--line); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.meter { display: flex; flex-direction: column; gap: 4px; }
+.meter .top { display: flex; justify-content: space-between; gap: 8px; }
+.bar { height: 8px; border-radius: 4px; background: var(--surface2); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.bar i.warn { background: var(--warn); } .bar i.bad { background: var(--bad); } .bar i.good { background: var(--good); }
+.list { display: flex; flex-direction: column; gap: 12px; }
+.item { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.item:first-child { border-top: none; padding-top: 0; }
+.item .head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.item .head > * { min-width: 0; overflow-wrap: anywhere; }
+.gain { font-family: var(--font-mono); font-weight: 500; color: var(--good); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface2); }
+.chip.bad { color: var(--bad); border-color: var(--bad); background: transparent; }
+.chip.warn { color: var(--warn); border-color: var(--warn); background: transparent; }
+.chip.good { color: var(--good); border-color: var(--good); background: transparent; }
+.stats3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.stats3 div { display: flex; flex-direction: column; }
+.stats3 b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.copy { display: flex; gap: 8px; }
+.copy input { font-family: var(--font-mono); font-size: 12px; }
+details summary { cursor: pointer; font-weight: 600; }
+details > div { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.msg { font-size: 13px; }
+nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
+nav button { border: none; border-radius: 0; background: none; padding: 16px 4px; color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 14px; border-top: 3px solid transparent; }
+nav button[aria-selected="true"] { color: var(--accent); border-top-color: var(--accent); }
+section[hidden] { display: none !important; }
+section { display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 560px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } .grid.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: no-preference) { .bar i { transition: width 0.25s ease; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="label">Torn City</span>
+  <h1>Torn Company Desk</h1>
+  <p class="muted">Paste your company and player data, see what is costing you money, and get a ranked list of changes.</p>
+</header>
+
+<main>
+  <div class="banner" id="sampleBanner" hidden>
+    <p><b>Example data is loaded.</b> Import your own on the Company, Team and Me tabs, or start blank.</p>
+    <button id="clearSample" type="button">Start blank</button>
+  </div>
+
+  <!-- COMPANY -->
+  <section id="tab-company">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <div style="min-width:0"><h2 id="cName">Company</h2><p class="muted" id="cSub"></p></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi big"><span class="label">Profit per day</span><span class="v" id="kProfit">–</span></div>
+        <div class="kpi big"><span class="label">Profit per week</span><span class="v" id="kWeek">–</span></div>
+        <div class="kpi"><span class="label">Margin</span><span class="v" id="kMargin">–</span></div>
+        <div class="kpi"><span class="label">Wages / revenue</span><span class="v" id="kWage">–</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Company health</h3>
+      <div id="meters" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Biggest profit moves</h3>
+      <div id="topMoves" class="list"></div>
+      <button class="link" id="seePlan" type="button" style="align-self:flex-start">See the full plan</button>
+    </div>
+
+    <div class="panel">
+      <h3>Company numbers</h3>
+      <div class="grid">
+        <label class="field full"><span class="label">Company name</span><input id="c-name" data-bind="company.name" data-text="1" autocomplete="off"></label>
+        <label class="field"><span class="label">Stars</span><input type="number" inputmode="decimal" data-bind="company.stars"></label>
+        <label class="field"><span class="label">Employees hired</span><input type="number" inputmode="decimal" data-bind="company.hired"></label>
+        <label class="field"><span class="label">Employee capacity</span><input type="number" inputmode="decimal" data-bind="company.max"></label>
+        <label class="field"><span class="label">Daily customers</span><input type="number" inputmode="decimal" data-bind="company.cust"></label>
+        <label class="field"><span class="label">Daily revenue ($)</span><input type="number" inputmode="decimal" data-bind="company.rev"></label>
+        <label class="field"><span class="label">Advertising per day ($)</span><input type="number" inputmode="decimal" data-bind="company.ads"></label>
+        <label class="field"><span class="label">Wages per day ($)</span><input type="number" inputmode="decimal" data-bind="company.wages"></label>
+        <label class="field"><span class="label">Popularity (0-100)</span><input type="number" inputmode="decimal" data-bind="company.pop"></label>
+        <label class="field"><span class="label">Efficiency (0-100)</span><input type="number" inputmode="decimal" data-bind="company.eff"></label>
+        <label class="field"><span class="label">Environment (0-100)</span><input type="number" inputmode="decimal" data-bind="company.env"></label>
+      </div>
+      <p class="muted msg">If you have staff listed on the Team tab, wages are taken from them instead.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Connect Torn</h3>
+      <p class="muted msg">Add your API key once. It is saved only on this device. Then tap Sync to load your company straight from Torn.</p>
+      <label class="field"><span class="label">Torn API key</span><input id="apiKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key"></label>
+      <div class="row"><button class="primary" id="syncCompany" type="button">Sync company and staff</button><a class="btn alt" id="openCompany" href="https://api.torn.com/company/?selections=profile,employees&amp;key=YOURKEY" target="_blank" rel="noopener">Open data to copy</a></div>
+      <textarea id="importCompany" placeholder='Only if sync is blocked, paste the data here'></textarea>
+      <div class="row"><button class="primary" id="doImportCompany" type="button">Import company and staff</button><span class="msg" id="msgCompany" role="status"></span></div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="tab-team" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2>Team</h2><span class="muted mono" id="teamCount"></span></div>
+      <div id="teamList" class="list"></div>
+    </div>
+    <div class="panel">
+      <h3 id="formTitle">Add an employee</h3>
+      <div class="grid">
+        <label class="field"><span class="label">Name</span><input id="e-name" autocomplete="off"></label>
+        <label class="field"><span class="label">Position</span><input id="e-pos" autocomplete="off"></label>
+        <label class="field"><span class="label">Manual labor</span><input id="e-man" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Intelligence</span><input id="e-int" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Endurance</span><input id="e-end" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Effectiveness total</span><input id="e-eff" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Addiction penalty</span><input id="e-add" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Inactivity penalty</span><input id="e-inact" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Wage per day ($)</span><input id="e-wage" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Days in company</span><input id="e-days" type="number" inputmode="decimal"></label>
+      </div>
+      <div class="row"><button class="primary" id="saveEmp" type="button">Add employee</button><button id="cancelEmp" type="button" hidden>Cancel edit</button></div>
+    </div>
+  </section>
+
+  <!-- ME -->
+  <section id="tab-me" hidden>
+    <div class="panel">
+      <h2 id="meName">My working stats</h2>
+      <div class="grid g3">
+        <label class="field"><span class="label">Manual labor</span><input type="number" inputmode="decimal" data-bind="me.man"></label>
+        <label class="field"><span class="label">Intelligence</span><input type="number" inputmode="decimal" data-bind="me.int"></label>
+        <label class="field"><span class="label">Endurance</span><input type="number" inputmode="decimal" data-bind="me.end"></label>
+        <label class="field"><span class="label">My addiction penalty</span><input type="number" inputmode="decimal" data-bind="me.add"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>What my position leans on</h3>
+      <p class="muted msg">Look at your position in the game and rate how much it relies on each stat. 0 is not at all, 3 is the main stat.</p>
+      <div class="grid g3">
+        <label class="field"><span class="label">Manual labor</span><select data-bind="w.man"><option>0</option><option>1</option><option>2</option><option>3</option></select></label>
+        <label class="field"><span class="label">Intelligence</span><select data-bind="w.int"><option>0</option><option>1</option><option>2</option><option>3</option></select></label>
+        <label class="field"><span class="label">Endurance</span><select data-bind="w.end"><option>0</option><option>1</option><option>2</option><option>3</option></select></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Train this first</h3>
+      <div id="meRank" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Ways to grow working stats</h3>
+      <div id="meTips" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Load my stats from Torn</h3>
+      <p class="muted msg">Uses the API key saved on the Company tab.</p>
+      <div class="row"><button class="primary" id="syncMe" type="button">Sync my stats</button><a class="btn alt" id="openMe" href="https://api.torn.com/user/?selections=profile,workstats&amp;key=YOURKEY" target="_blank" rel="noopener">Open data to copy</a></div>
+      <textarea id="importMe" placeholder='Only if sync is blocked, paste the data here'></textarea>
+      <div class="row"><button class="primary" id="doImportMe" type="button">Import my stats</button><span class="msg" id="msgMe" role="status"></span></div>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section id="tab-plan" hidden>
+    <div class="panel">
+      <h2>Profit moves, best first</h2>
+      <p class="muted msg">Each figure is a rough estimate of extra profit per day, based on how your revenue tracks your staff's total effectiveness.</p>
+      <div id="moves" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>What if I change something?</h3>
+      <div class="grid">
+        <label class="field"><span class="label">Extra hires: <b id="wiHiresV" class="mono">0</b></span><input id="wiHires" type="range" min="0" max="10" value="0"></label>
+        <label class="field"><span class="label">Effectiveness gain each: <b id="wiBoostV" class="mono">0</b></span><input id="wiBoost" type="range" min="0" max="25" value="0"></label>
+        <label class="field full"><span class="label">Change advertising per day ($)</span><input id="wiAds" type="number" inputmode="decimal" value="0"></label>
+      </div>
+      <div class="kpis" id="wiOut"></div>
+      <p class="muted msg">New hires are counted at 60 percent of their share, since customers limit how much extra staff can sell. Advertising is only a cost here. Raise it for a week and watch daily customers to see if it pays.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Tests to run</h3>
+      <div id="tests" class="list"></div>
+    </div>
+  </section>
+</main>
+
+<nav role="tablist" aria-label="Sections">
+  <button role="tab" data-tab="company" aria-selected="true" type="button">Company</button>
+  <button role="tab" data-tab="team" aria-selected="false" type="button">Team</button>
+  <button role="tab" data-tab="me" aria-selected="false" type="button">Me</button>
+  <button role="tab" data-tab="plan" aria-selected="false" type="button">Plan</button>
+</nav>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'tornCompanyDesk.v1';
+  var HIRE_YIELD = 0.6;
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var num = function (v) { var x = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isFinite(x) ? x : 0; };
+  var money = function (n) { return (n < 0 ? '−' : '') + '$' + Math.abs(Math.round(n)).toLocaleString('en-US'); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var sum = function (a, f) { return a.reduce(function (t, x) { return t + f(x); }, 0); };
+  var STATS = [['man', 'Manual labor'], ['int', 'Intelligence'], ['end', 'Endurance']];
+
+  function blank() {
+    return { sample: false,
+      company: { name: '', type: '', stars: 0, hired: 0, max: 0, cust: 0, rev: 0, ads: 0, wages: 0, pop: 0, eff: 0, env: 0 },
+      team: [], me: { name: '', man: 0, int: 0, end: 0, add: 0 }, w: { man: 1, int: 1, end: 1 } };
+  }
+  function sample() {
+    var s = blank();
+    s.sample = true;
+    s.company = { name: 'Example Co (sample)', type: 'Sample', stars: 4, hired: 6, max: 10, cust: 4800, rev: 1380000, ads: 90000, wages: 450000, pop: 68, eff: 74, env: 61 };
+    s.team = [
+      { name: 'Mara K.', pos: 'Manager', man: 4200, int: 3600, end: 2900, eff: 84, add: 0, inact: 0, days: 212, wage: 98000 },
+      { name: 'Dev R.', pos: 'Cashier', man: 2100, int: 1800, end: 2600, eff: 71, add: 0, inact: 0, days: 160, wage: 72000 },
+      { name: 'Sol T.', pos: 'Cashier', man: 1500, int: 900, end: 1700, eff: 52, add: 9, inact: 0, days: 75, wage: 72000 },
+      { name: 'Ines P.', pos: 'Stocker', man: 3800, int: 1200, end: 3300, eff: 77, add: 0, inact: 0, days: 190, wage: 64000 },
+      { name: 'Kofi A.', pos: 'Stocker', man: 2400, int: 700, end: 2100, eff: 49, add: 0, inact: 14, days: 44, wage: 64000 },
+      { name: 'Jun L.', pos: 'Marketer', man: 1100, int: 3900, end: 1500, eff: 80, add: 0, inact: 0, days: 130, wage: 80000 }
+    ];
+    s.me = { name: 'You (sample)', man: 2600, int: 1400, end: 3100, add: 0 };
+    s.w = { man: 1, int: 3, end: 2 };
+    return s;
+  }
+  var S = null;
+  try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
+  if (!S || !S.company || !S.team || !S.me || !S.w) S = sample();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } }
+
+  function getPath(p) { var o = S; p.split('.').forEach(function (k) { o = o[k]; }); return o; }
+  function setPath(p, v) { var k = p.split('.'); var o = S; for (var i = 0; i < k.length - 1; i++) o = o[k[i]]; o[k[k.length - 1]] = v; }
+
+  /* ---------- calculations ---------- */
+  function metrics() {
+    var t = S.team, c = S.company;
+    var staff = t.length || num(c.hired);
+    var effSum = sum(t, function (e) { return num(e.eff); });
+    var avgEff = t.length ? effSum / t.length : 0;
+    var wageSum = sum(t, function (e) { return num(e.wage); });
+    var wages = wageSum > 0 ? wageSum : num(c.wages);
+    var avgWage = t.length && wageSum > 0 ? wageSum / t.length : 0;
+    var rev = num(c.rev), ads = num(c.ads);
+    var profit = rev - wages - ads;
+    return { staff: staff, effSum: effSum, avgEff: avgEff, wages: wages, avgWage: avgWage, rev: rev, ads: ads, profit: profit,
+      margin: rev > 0 ? profit / rev : 0, wageShare: rev > 0 ? wages / rev : 0,
+      rpe: effSum > 0 ? rev / effSum : 0, open: Math.max(0, num(c.max) - staff) };
+  }
+
+  function moves(m) {
+    var out = [], t = S.team;
+    if (!t.length || m.rpe <= 0) return out;
+    if (m.open > 0) {
+      var g = m.rpe * m.avgEff * m.open * HIRE_YIELD - m.avgWage * m.open;
+      if (g > 0) out.push({ title: 'Fill ' + m.open + ' open slot' + (m.open > 1 ? 's' : ''), gain: g,
+        text: 'Hire people whose total effectiveness is near your team average of ' + m.avgEff.toFixed(0) + '. Each new person adds sales and costs about ' + money(m.avgWage) + ' per day in wages.' });
+    }
+    t.forEach(function (e) {
+      var add = Math.abs(num(e.add)), inact = Math.abs(num(e.inact)), pen = add + inact, eff = num(e.eff);
+      if (pen > 0) {
+        var what = [];
+        if (add > 0) what.push('addiction (' + add + ' points)');
+        if (inact > 0) what.push('inactivity (' + inact + ' points)');
+        out.push({ title: esc(e.name) + ': remove the ' + what.join(' and ') + ' penalty', gain: m.rpe * pen,
+          text: (add > 0 ? 'Ask them to stay off drugs until the penalty fades. ' : '') + (inact > 0 ? 'Message them to log in daily, or replace them if they stay away.' : '') });
+      }
+      var gap = m.avgEff - (eff + pen);
+      if (t.length >= 3 && gap > m.avgEff * 0.12) {
+        out.push({ title: esc(e.name) + ' is ' + gap.toFixed(0) + ' points under your team average', gain: m.rpe * gap * 0.5,
+          text: 'Move them to a position that uses their best stat (' + bestStat(e) + '), or replace them. Shown at half value because stats take time to grow.' });
+      }
+    });
+    var avgRate = m.wages > 0 && m.effSum > 0 ? m.wages / m.effSum : 0;
+    if (avgRate > 0) t.forEach(function (e) {
+      var fair = avgRate * num(e.eff), w = num(e.wage);
+      if (w > fair * 1.25 && w - fair > 5000) out.push({ title: esc(e.name) + ' is paid above their output', gain: (w - fair) * 0.6,
+        text: 'They earn ' + money(w) + ' per day, but the team pays about ' + money(fair) + ' for that effectiveness. Review the wage.' });
+    });
+    out.sort(function (a, b) { return b.gain - a.gain; });
+    return out;
+  }
+
+  function tests(m) {
+    var c = S.company, out = [];
+    if (num(c.pop) > 0 && num(c.pop) < 65) out.push({ title: 'Raise advertising for one week', text: 'Popularity is ' + num(c.pop) + '. Raise the daily advertising budget by a quarter and compare daily customers after seven days. Keep it only if the extra revenue beats the extra spend.' });
+    if (num(c.env) > 0 && num(c.env) < 60) out.push({ title: 'Look at environment upgrades', text: 'Environment is ' + num(c.env) + '. Check which upgrades your company type offers and compare the price to what a few extra points are worth in revenue.' });
+    if (num(c.eff) > 0 && num(c.eff) < 75) out.push({ title: 'Fix efficiency before spending elsewhere', text: 'Efficiency is ' + num(c.eff) + '. Penalties and weak staff pull it down. The moves above go after those first.' });
+    if (m.wageShare > 0.45) out.push({ title: 'Cut wages gradually', text: 'Wages take ' + (m.wageShare * 100).toFixed(0) + ' percent of revenue. Lower the highest wages in small steps and watch whether people stay active.' });
+    if (m.rev > 0 && m.ads / m.rev < 0.03) out.push({ title: 'Test your product price', text: 'Move prices up or down in small steps for a few days each and track revenue per customer. Revenue per customer is ' + money(num(c.cust) > 0 ? m.rev / num(c.cust) : 0) + ' right now.' });
+    if (!out.length) out.push({ title: 'Nothing urgent', text: 'Health numbers look fine. Keep checking the moves list after each payday.' });
+    return out;
+  }
+
+  function bestStat(e) {
+    var best = STATS[0];
+    STATS.forEach(function (s) { if (num(e[s[0]]) > num(e[best[0]])) best = s; });
+    return best[1].toLowerCase();
+  }
+
+  /* ---------- rendering ---------- */
+  function setText(id, v, cls) { var el = $(id); el.textContent = v; if (cls !== undefined) el.className = (el.className.replace(/\b(pos|neg)\b/g, '').trim() + ' ' + cls).trim(); }
+  function movesHTML(list, limit) {
+    if (!list.length) return '<p class="muted">Add staff with effectiveness numbers on the Team tab and the moves appear here.</p>';
+    return list.slice(0, limit || list.length).map(function (x) {
+      return '<div class="item"><div class="head"><h3>' + x.title + '</h3><span class="gain">+' + money(x.gain) + '/day</span></div><p class="muted">' + esc(x.text) + '</p></div>';
+    }).join('');
+  }
+  function meter(label, v) {
+    var cls = v >= 75 ? 'good' : v >= 50 ? 'warn' : 'bad';
+    return '<div class="meter"><div class="top"><span>' + label + '</span><span class="mono">' + Math.round(v) + ' / 100</span></div><div class="bar"><i class="' + cls + '" style="width:' + Math.max(0, Math.min(100, v)) + '%"></i></div></div>';
+  }
+
+  function renderCompany() {
+    var m = metrics(), c = S.company;
+    $('#cName').textContent = c.name || 'Your company';
+    $('#cSub').textContent = [c.type, num(c.stars) ? num(c.stars) + ' stars' : '', m.staff + ' of ' + (num(c.max) || '?') + ' staff', num(c.cust) ? num(c.cust).toLocaleString('en-US') + ' customers a day' : ''].filter(Boolean).join(' · ');
+    setText('#kProfit', money(m.profit), m.profit < 0 ? 'neg' : 'pos');
+    setText('#kWeek', money(m.profit * 7), m.profit < 0 ? 'neg' : 'pos');
+    setText('#kMargin', m.rev > 0 ? (m.margin * 100).toFixed(1) + '%' : '–');
+    setText('#kWage', m.rev > 0 ? (m.wageShare * 100).toFixed(1) + '%' : '–');
+    $('#meters').innerHTML = meter('Popularity', num(c.pop)) + meter('Efficiency', num(c.eff)) + meter('Environment', num(c.env));
+    $('#topMoves').innerHTML = movesHTML(moves(m), 3);
+    $('#sampleBanner').hidden = !S.sample;
+  }
+
+  function flags(e) {
+    var f = [];
+    if (num(e.add) > 0) f.push('<span class="chip bad">Addiction −' + Math.abs(num(e.add)) + '</span>');
+    if (num(e.inact) > 0) f.push('<span class="chip warn">Inactive −' + Math.abs(num(e.inact)) + '</span>');
+    if (num(e.days) > 0 && num(e.days) < 30) f.push('<span class="chip">New</span>');
+    if (!f.length) f.push('<span class="chip good">No penalties</span>');
+    return f.join('');
+  }
+  var editIdx = -1;
+  function renderTeam() {
+    var t = S.team;
+    $('#teamCount').textContent = t.length + ' staff';
+    if (!t.length) { $('#teamList').innerHTML = '<p class="muted">No staff yet. Import your company on the Company tab, or add people below.</p>'; return; }
+    var order = t.map(function (e, i) { return i; }).sort(function (a, b) { return num(t[b].eff) - num(t[a].eff); });
+    $('#teamList').innerHTML = order.map(function (i) {
+      var e = t[i];
+      return '<div class="item"><div class="head"><h3>' + esc(e.name) + ' <span class="muted" style="font-weight:400">' + esc(e.pos) + '</span></h3><span class="mono">' + num(e.eff).toFixed(0) + ' eff</span></div>' +
+        '<div class="stats3 msg"><div><span class="label">Manual</span><b>' + num(e.man).toLocaleString('en-US') + '</b></div><div><span class="label">Intel</span><b>' + num(e.int).toLocaleString('en-US') + '</b></div><div><span class="label">Endur</span><b>' + num(e.end).toLocaleString('en-US') + '</b></div></div>' +
+        '<div class="chips">' + flags(e) + '<span class="chip mono">' + money(num(e.wage)) + '/day</span></div>' +
+        '<div class="row"><button type="button" data-edit="' + i + '">Edit</button><button type="button" data-del="' + i + '">Remove</button></div></div>';
+    }).join('');
+  }
+
+  function renderMe() {
+    var me = S.me, t = S.team;
+    $('#meName').textContent = me.name ? me.name + ': working stats' : 'My working stats';
+    var bench = {};
+    STATS.forEach(function (s) { bench[s[0]] = Math.max(num(me[s[0]]), t.reduce(function (mx, e) { return Math.max(mx, num(e[s[0]])); }, 0)); });
+    var rows = STATS.map(function (s) {
+      var k = s[0], mine = num(me[k]), b = bench[k], w = num(S.w[k]);
+      var gap = b > 0 ? (b - mine) / b : 0;
+      return { k: k, name: s[1], mine: mine, bench: b, w: w, need: w * gap };
+    }).sort(function (a, b) { return b.need - a.need; });
+    var top = rows[0];
+    var html = '';
+    if (!rows.some(function (r) { return r.mine > 0; })) html = '<p class="muted">Enter your three working stats above, or import them from Torn.</p>';
+    else {
+      html = rows.map(function (r, i) {
+        var pct = r.bench > 0 ? Math.min(100, r.mine / r.bench * 100) : 0;
+        return '<div class="item"><div class="head"><h3>' + (i + 1) + '. ' + r.name + '</h3><span class="mono muted">' + r.mine.toLocaleString('en-US') + ' / ' + r.bench.toLocaleString('en-US') + '</span></div>' +
+          '<div class="bar"><i style="width:' + pct.toFixed(0) + '%"></i></div>' +
+          '<p class="muted">' + (r.w === 0 ? 'Your position does not use this stat, so it can wait.' : r.need < 0.05 ? 'Already near the best in your team.' : 'You are ' + (100 - pct).toFixed(0) + ' percent below the best in your team, and your position weights it ' + r.w + ' of 3.') + '</p></div>';
+      }).join('');
+      if (top.need >= 0.05) html = '<p><b>Raise ' + top.name.toLowerCase() + ' first.</b> It is the biggest gap that matters for your position.</p>' + html;
+    }
+    $('#meRank').innerHTML = html;
+    var tips = [];
+    if (num(me.add) > 0) tips.push(['Clear your addiction penalty', 'It is costing you ' + Math.abs(num(me.add)) + ' effectiveness points right now. That is the fastest gain you have, and it costs nothing.']);
+    tips.push(['Work your position every day', 'Working stats come from your job each day, so the position you hold decides which stat grows. Check the daily stat gains listed on each position in your company, and pick one that feeds ' + (top ? top.name.toLowerCase() : 'your weakest stat') + '.']);
+    tips.push(['Use education courses', 'Some courses add working stats when you finish them. Check the course list for ones that name a working stat.']);
+    tips.push(['Stay active and stay put', 'Daily activity avoids the inactivity penalty, and staying in one company builds the settled-in bonus.']);
+    tips.push(['Skip the gym for this', 'Gym stats such as strength do not count toward company effectiveness. Working stats are separate.']);
+    $('#meTips').innerHTML = tips.map(function (x) { return '<div class="item"><h3>' + esc(x[0]) + '</h3><p class="muted">' + esc(x[1]) + '</p></div>'; }).join('');
+  }
+
+  function renderPlan() {
+    var m = metrics();
+    $('#moves').innerHTML = movesHTML(moves(m));
+    $('#tests').innerHTML = tests(m).map(function (x) { return '<div class="item"><h3>' + esc(x.title) + '</h3><p class="muted">' + esc(x.text) + '</p></div>'; }).join('');
+    var hires = num($('#wiHires').value), boost = num($('#wiBoost').value), ads = num($('#wiAds').value);
+    $('#wiHiresV').textContent = hires; $('#wiBoostV').textContent = boost;
+    var out = $('#wiOut');
+    if (m.rpe <= 0) { out.innerHTML = '<p class="muted" style="grid-column:1/-1">Add staff with effectiveness numbers to model changes.</p>'; return; }
+    var hireEff = hires * m.avgEff * HIRE_YIELD;
+    var newEff = m.effSum + hireEff + boost * (S.team.length || m.staff);
+    var rev2 = m.rpe * newEff, wages2 = m.wages + hires * m.avgWage, ads2 = m.ads + ads;
+    var profit2 = rev2 - wages2 - ads2, d = profit2 - m.profit;
+    out.innerHTML =
+      '<div class="kpi"><span class="label">New profit / day</span><span class="v ' + (profit2 < 0 ? 'neg' : 'pos') + '">' + money(profit2) + '</span></div>' +
+      '<div class="kpi"><span class="label">Change / day</span><span class="v ' + (d < 0 ? 'neg' : 'pos') + '">' + (d >= 0 ? '+' : '') + money(d) + '</span></div>' +
+      '<div class="kpi"><span class="label">Change / week</span><span class="v ' + (d < 0 ? 'neg' : 'pos') + '">' + (d >= 0 ? '+' : '') + money(d * 7) + '</span></div>' +
+      '<div class="kpi"><span class="label">New revenue / day</span><span class="v">' + money(rev2) + '</span></div>';
+    $('#wiHires').max = Math.max(1, m.open);
+  }
+
+  function renderAll() { renderCompany(); renderTeam(); renderMe(); renderPlan(); }
+
+  /* ---------- inputs ---------- */
+  $$('[data-bind]').forEach(function (el) {
+    var p = el.getAttribute('data-bind');
+    var v = getPath(p);
+    el.value = (el.hasAttribute('data-text') ? (v || '') : (v === 0 || v === undefined ? '' : v));
+    el.addEventListener('input', function () {
+      setPath(p, el.hasAttribute('data-text') ? el.value : (el.tagName === 'SELECT' ? num(el.value) : num(el.value)));
+      save(); renderCompany(); renderMe(); renderPlan();
+    });
+  });
+  ['wiHires', 'wiBoost', 'wiAds'].forEach(function (id) { $('#' + id).addEventListener('input', renderPlan); });
+
+  /* tabs */
+  function showTab(name) {
+    ['company', 'team', 'me', 'plan'].forEach(function (n) { $('#tab-' + n).hidden = n !== name; });
+    $$('nav button').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false'); });
+    window.scrollTo(0, 0);
+  }
+  $$('nav button').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
+  $('#seePlan').addEventListener('click', function () { showTab('plan'); });
+
+  /* sample banner */
+  $('#clearSample').addEventListener('click', function () {
+    S = blank(); save();
+    $$('[data-bind]').forEach(function (el) { var v = getPath(el.getAttribute('data-bind')); el.value = el.hasAttribute('data-text') ? (v || '') : (v === 0 ? '' : v); });
+    renderAll();
+  });
+
+  /* copy buttons */
+  $$('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var inp = $('#' + b.getAttribute('data-copy'));
+      var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+      var fallback = function () { inp.focus(); inp.select(); };
+      try { navigator.clipboard.writeText(inp.value).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+
+  /* team form */
+  var F = ['name', 'pos', 'man', 'int', 'end', 'eff', 'add', 'inact', 'wage', 'days'];
+  function clearForm() { F.forEach(function (k) { $('#e-' + k).value = ''; }); editIdx = -1; $('#formTitle').textContent = 'Add an employee'; $('#saveEmp').textContent = 'Add employee'; $('#cancelEmp').hidden = true; }
+  $('#saveEmp').addEventListener('click', function () {
+    var e = {};
+    F.forEach(function (k) { var v = $('#e-' + k).value; e[k] = (k === 'name' || k === 'pos') ? v.trim() : num(v); });
+    if (!e.name) { $('#e-name').focus(); return; }
+    if (editIdx >= 0) S.team[editIdx] = e; else S.team.push(e);
+    S.company.hired = S.team.length;
+    var hired = $('[data-bind="company.hired"]'); if (hired) hired.value = S.company.hired;
+    save(); clearForm(); renderAll();
+  });
+  $('#cancelEmp').addEventListener('click', clearForm);
+  $('#teamList').addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (t.hasAttribute('data-del')) {
+      S.team.splice(num(t.getAttribute('data-del')), 1); S.company.hired = S.team.length;
+      var hired = $('[data-bind="company.hired"]'); if (hired) hired.value = S.company.hired;
+      save(); renderAll();
+    } else if (t.hasAttribute('data-edit')) {
+      editIdx = num(t.getAttribute('data-edit'));
+      var e = S.team[editIdx];
+      F.forEach(function (k) { $('#e-' + k).value = e[k] === undefined || e[k] === 0 ? '' : e[k]; });
+      $('#formTitle').textContent = 'Edit ' + e.name; $('#saveEmp').textContent = 'Save changes'; $('#cancelEmp').hidden = false;
+      $('#e-name').scrollIntoView({ block: 'center' });
+    }
+  });
+
+  /* imports */
+  function parseJSON(txt) {
+    var j;
+    try { j = JSON.parse(txt.trim()); } catch (e) { return { err: 'That is not valid JSON. Copy all the text from the Torn page, from the first { to the last }.' }; }
+    if (j && j.error) return { err: 'Torn answered with an error: ' + ((j.error && j.error.error) || 'check the key and permissions') + '.' };
+    return { j: j };
+  }
+  $('#doImportCompany').addEventListener('click', function () {
+    var msg = $('#msgCompany'), r = parseJSON($('#importCompany').value);
+    if (r.err) { msg.textContent = r.err; msg.className = 'msg neg'; return; }
+    var c = r.j.company || r.j;
+    var raw = c.employees || r.j.company_employees || {};
+    var arr = Array.isArray(raw) ? raw : Object.keys(raw).map(function (k) { return raw[k]; });
+    var team = arr.map(function (e) {
+      var ef = e.effectiveness || {};
+      return { name: e.name || 'Unknown', pos: e.position || '', man: num(e.manual_labor), int: num(e.intelligence), end: num(e.endurance),
+        eff: num(ef.total), add: Math.abs(num(ef.addiction)), inact: Math.abs(num(ef.inactivity)), days: num(e.days_in_company), wage: num(e.wage) };
+    });
+    if (!c.name && !team.length && !c.daily_revenue) { msg.textContent = 'No company data found. Use the profile and employees selections in the address.'; msg.className = 'msg neg'; return; }
+    S.sample = false;
+    var co = S.company;
+    co.name = c.name || co.name;
+    co.type = typeof c.company_type === 'string' ? c.company_type : (c.company_type ? 'Type ' + c.company_type : co.type);
+    if (c.rating !== undefined) co.stars = num(c.rating);
+    if (c.employees_capacity !== undefined) co.max = num(c.employees_capacity);
+    if (c.daily_revenue !== undefined) co.rev = num(c.daily_revenue);
+    if (c.daily_customers !== undefined) co.cust = num(c.daily_customers);
+    if (c.popularity !== undefined) co.pop = num(c.popularity);
+    if (c.efficiency !== undefined) co.eff = num(c.efficiency);
+    if (c.environment !== undefined) co.env = num(c.environment);
+    if (c.advertisement_budget !== undefined) co.ads = num(c.advertisement_budget);
+    if (team.length) { S.team = team; co.hired = team.length; co.wages = sum(team, function (e) { return e.wage; }); }
+    else if (c.employees_hired !== undefined) co.hired = num(c.employees_hired);
+    save();
+    $$('[data-bind]').forEach(function (el) { var v = getPath(el.getAttribute('data-bind')); el.value = el.hasAttribute('data-text') ? (v || '') : (v === 0 ? '' : v); });
+    renderAll();
+    msg.textContent = 'Imported ' + (team.length ? team.length + ' staff and ' : '') + 'company numbers. Check the Plan tab.'; msg.className = 'msg pos';
+    $('#importCompany').value = '';
+  });
+  $('#doImportMe').addEventListener('click', function () {
+    var msg = $('#msgMe'), r = parseJSON($('#importMe').value);
+    if (r.err) { msg.textContent = r.err; msg.className = 'msg neg'; return; }
+    var j = r.j, w = j.workstats || j;
+    if (w.manual_labor === undefined && w.intelligence === undefined && w.endurance === undefined) { msg.textContent = 'No working stats found. Add workstats to the address and try again.'; msg.className = 'msg neg'; return; }
+    S.sample = false;
+    S.me.name = j.name || S.me.name;
+    S.me.man = num(w.manual_labor); S.me.int = num(w.intelligence); S.me.end = num(w.endurance);
+    save();
+    $$('[data-bind^="me."]').forEach(function (el) { var v = getPath(el.getAttribute('data-bind')); el.value = v === 0 ? '' : v; });
+    renderAll();
+    msg.textContent = 'Imported your working stats.'; msg.className = 'msg pos';
+    $('#importMe').value = '';
+  });
+
+  /* API key and one-tap links */
+  var KK = KEY + '.apiKey';
+  var keyEl = $('#apiKey');
+  function urls() {
+    var k = encodeURIComponent((keyEl.value || '').trim() || 'YOURKEY');
+    $('#openCompany').href = 'https://api.torn.com/company/?selections=profile,employees&key=' + k;
+    $('#openMe').href = 'https://api.torn.com/user/?selections=profile,workstats&key=' + k;
+  }
+  try { keyEl.value = localStorage.getItem(KK) || ''; } catch (e) { /* storage unavailable */ }
+  keyEl.addEventListener('input', function () { try { localStorage.setItem(KK, keyEl.value.trim()); } catch (e) { /* storage unavailable */ } urls(); });
+  urls();
+  [['importCompany', 'doImportCompany'], ['importMe', 'doImportMe']].forEach(function (p) {
+    $('#' + p[0]).addEventListener('paste', function () { setTimeout(function () { $('#' + p[1]).click(); }, 50); });
+  });
+
+  function sync(kind) {
+    var key = (keyEl.value || '').trim();
+    var isCo = kind === 'company';
+    var msg = $(isCo ? '#msgCompany' : '#msgMe');
+    if (!key) { msg.textContent = 'Add your API key first.'; msg.className = 'msg neg'; return; }
+    msg.textContent = 'Contacting Torn...'; msg.className = 'msg muted';
+    var u = isCo ? 'https://api.torn.com/company/?selections=profile,employees&key=' : 'https://api.torn.com/user/?selections=profile,workstats&key=';
+    fetch(u + encodeURIComponent(key)).then(function (r) { return r.text(); }).then(function (t) {
+      $(isCo ? '#importCompany' : '#importMe').value = t;
+      $(isCo ? '#doImportCompany' : '#doImportMe').click();
+    }).catch(function () { msg.textContent = 'Could not reach Torn. Check your connection, or use Open data to copy and paste it here.'; msg.className = 'msg neg'; });
+  }
+  $('#syncCompany').addEventListener('click', function () { sync('company'); });
+  $('#syncMe').addEventListener('click', function () { sync('me'); });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
