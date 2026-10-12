@@ -102,9 +102,16 @@ button.link { background: none; border: none; color: var(--accent); padding: 4px
 details summary { cursor: pointer; font-weight: 600; }
 details > div { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 .msg { font-size: 13px; }
-nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
-nav button { border: none; border-radius: 0; background: none; padding: 16px 4px; color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 14px; border-top: 3px solid transparent; }
+nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(6, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
+nav button { border: none; border-radius: 0; background: none; padding: 16px 0; color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 12px; border-top: 3px solid transparent; }
 nav button[aria-selected="true"] { color: var(--accent); border-top-color: var(--accent); }
+.logo { width: 64px; height: 64px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 24px; overflow: hidden; flex: none; }
+.logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.stars { color: var(--warn); letter-spacing: 2px; font-size: 16px; }
+.scroll { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th, .tbl td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl td.n, .tbl th.n { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 section[hidden] { display: none !important; }
 section { display: flex; flex-direction: column; gap: 16px; }
 @media (min-width: 560px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } .grid.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -127,9 +134,19 @@ section { display: flex; flex-direction: column; gap: 16px; }
   <!-- COMPANY -->
   <section id="tab-company">
     <div class="panel">
-      <div class="row" style="justify-content:space-between">
-        <div style="min-width:0"><h2 id="cName">Company</h2><p class="muted" id="cSub"></p></div>
+      <div class="row" style="flex-wrap:nowrap;gap:12px">
+        <div class="logo" id="logoBox" aria-hidden="true"></div>
+        <div style="min-width:0"><h2 id="cName">Company</h2><p class="muted" id="cSub"></p><div class="stars" id="cStars" aria-label="Star rating"></div></div>
       </div>
+      <details>
+        <summary>Change logo</summary>
+        <div>
+          <p class="muted msg">Add your company picture here. It stays on this device. If Torn sends a logo link, it is used automatically.</p>
+          <label class="field"><span class="label">Choose a picture</span><input id="logoFile" type="file" accept="image/*"></label>
+          <label class="field"><span class="label">Or paste an image link</span><input id="logoUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://"></label>
+          <div class="row"><button type="button" id="logoClear">Remove logo</button></div>
+        </div>
+      </details>
       <div class="kpis">
         <div class="kpi big"><span class="label">Profit per day</span><span class="v" id="kProfit">–</span></div>
         <div class="kpi big"><span class="label">Profit per week</span><span class="v" id="kWeek">–</span></div>
@@ -158,6 +175,7 @@ section { display: flex; flex-direction: column; gap: 16px; }
         <label class="field"><span class="label">Employee capacity</span><input type="number" inputmode="decimal" data-bind="company.max"></label>
         <label class="field"><span class="label">Daily customers</span><input type="number" inputmode="decimal" data-bind="company.cust"></label>
         <label class="field"><span class="label">Daily revenue ($)</span><input type="number" inputmode="decimal" data-bind="company.rev"></label>
+        <label class="field"><span class="label">Weekly revenue ($)</span><input type="number" inputmode="decimal" data-bind="company.wk"></label>
         <label class="field"><span class="label">Advertising per day ($)</span><input type="number" inputmode="decimal" data-bind="company.ads"></label>
         <label class="field"><span class="label">Wages per day ($)</span><input type="number" inputmode="decimal" data-bind="company.wages"></label>
         <label class="field"><span class="label">Popularity (0-100)</span><input type="number" inputmode="decimal" data-bind="company.pop"></label>
@@ -199,6 +217,84 @@ section { display: flex; flex-direction: column; gap: 16px; }
         <label class="field"><span class="label">Days in company</span><input id="e-days" type="number" inputmode="decimal"></label>
       </div>
       <div class="row"><button class="primary" id="saveEmp" type="button">Add employee</button><button id="cancelEmp" type="button" hidden>Cancel edit</button></div>
+    </div>
+  </section>
+
+  <!-- LOOKUP -->
+  <section id="tab-lookup" hidden>
+    <div class="panel">
+      <h2>Look up any company</h2>
+      <p class="muted msg">Enter a company ID, or a player ID to find their company. It uses the API key saved on the Company tab. Torn shows only public numbers here: stars, staff, revenue and customers. Efficiency, environment and wages stay private.</p>
+      <div class="grid">
+        <label class="field"><span class="label">Company ID</span><input id="lkId" type="number" inputmode="numeric"></label>
+        <label class="field"><span class="label">Or player ID</span><input id="lkPlayer" type="number" inputmode="numeric"></label>
+      </div>
+      <div class="row"><button class="primary" id="lkGo" type="button">Look up</button><span class="msg muted" id="lkMsg" role="status"></span></div>
+    </div>
+    <div id="lkOut" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="panel">
+      <h3>Recent lookups</h3>
+      <div id="lkRecent" class="list"></div>
+    </div>
+  </section>
+
+  <!-- STARS -->
+  <section id="tab-stars" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2>Star watch</h2><span class="chip" id="starChip">-</span></div>
+      <div class="kpis">
+        <div class="kpi big"><span class="label">Stars now</span><span class="v" id="sNow">-</span></div>
+        <div class="kpi big"><span class="label">Next ranking</span><span class="v" id="sCount">-</span></div>
+        <div class="kpi"><span class="label">Weekly income</span><span class="v" id="sWk">-</span></div>
+        <div class="kpi"><span class="label">Popularity</span><span class="v" id="sPop">-</span></div>
+      </div>
+      <p class="muted msg" id="sNote"></p>
+      <div id="sReasons" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>What a star is worth</h3>
+      <div class="scroll" id="sWorth"></div>
+      <p class="muted msg">Per the Torn wiki, each star gives one job point a day, and a director gains 5, 10, 20, 35, then 50 working stat points a day from 1 to 5 or more stars. The Torn Stats guide says the company also gets trains equal to its stars.</p>
+    </div>
+
+    <div class="panel">
+      <h3>What it takes to move up</h3>
+      <label class="field"><span class="label">Popularity points to gain: <b id="mvPtsV" class="mono">3</b></span><input id="mvPts" type="range" min="1" max="15" value="3"></label>
+      <div id="mvOut" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Changes that raise income</h3>
+      <div id="sLevers" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Specials</h3>
+      <p class="muted msg">Specials unlock at a star level for your company type. Add yours from the Specials list in the game and this shows what you have and what is next.</p>
+      <div id="spList" class="list"></div>
+      <div class="grid">
+        <label class="field full"><span class="label">Special name</span><input id="spName" autocomplete="off"></label>
+        <label class="field"><span class="label">Stars needed</span><input id="spStars" type="number" inputmode="decimal"></label>
+        <label class="field"><span class="label">Job point cost</span><input id="spJp" type="number" inputmode="decimal"></label>
+      </div>
+      <div class="row"><button class="primary" id="spAdd" type="button">Add special</button></div>
+    </div>
+
+    <div class="panel">
+      <h3>My star cut-offs</h3>
+      <p class="muted msg">The app notices when stars change between your saved snapshots. If you remember the popularity when you last gained or lost a star, enter it and it is used instead.</p>
+      <div class="grid">
+        <label class="field"><span class="label">Popularity when I gained a star</span><input type="number" inputmode="decimal" data-bind="stars.gain"></label>
+        <label class="field"><span class="label">Popularity when I lost a star</span><input type="number" inputmode="decimal" data-bind="stars.loss"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>History</h3>
+      <div class="scroll" id="histBox"></div>
+      <div class="row"><button class="primary" id="snapNow" type="button">Save today's numbers</button><span class="msg muted" id="snapMsg" role="status"></span></div>
+      <p class="muted msg">Every sync saves a snapshot, one per day. Sync daily so the trend and your cut-offs get better.</p>
     </div>
   </section>
 
@@ -272,6 +368,8 @@ section { display: flex; flex-direction: column; gap: 16px; }
 <nav role="tablist" aria-label="Sections">
   <button role="tab" data-tab="company" aria-selected="true" type="button">Company</button>
   <button role="tab" data-tab="team" aria-selected="false" type="button">Team</button>
+  <button role="tab" data-tab="stars" aria-selected="false" type="button">Stars</button>
+  <button role="tab" data-tab="lookup" aria-selected="false" type="button">Lookup</button>
   <button role="tab" data-tab="me" aria-selected="false" type="button">Me</button>
   <button role="tab" data-tab="plan" aria-selected="false" type="button">Plan</button>
 </nav>
@@ -291,13 +389,13 @@ section { display: flex; flex-direction: column; gap: 16px; }
 
   function blank() {
     return { sample: false,
-      company: { name: '', type: '', stars: 0, hired: 0, max: 0, cust: 0, rev: 0, ads: 0, wages: 0, pop: 0, eff: 0, env: 0 },
-      team: [], me: { name: '', man: 0, int: 0, end: 0, add: 0 }, w: { man: 1, int: 1, end: 1 } };
+      company: { name: '', type: '', stars: 0, hired: 0, max: 0, cust: 0, rev: 0, wk: 0, ads: 0, wages: 0, pop: 0, eff: 0, env: 0 },
+      team: [], me: { name: '', man: 0, int: 0, end: 0, add: 0 }, w: { man: 1, int: 1, end: 1 }, hist: [], specials: [], stars: { gain: 0, loss: 0 }, logo: '', logoApi: '', looks: [] };
   }
   function sample() {
     var s = blank();
     s.sample = true;
-    s.company = { name: 'Example Co (sample)', type: 'Sample', stars: 4, hired: 6, max: 10, cust: 4800, rev: 1380000, ads: 90000, wages: 450000, pop: 68, eff: 74, env: 61 };
+    s.company = { name: 'Example Co (sample)', type: 'Sample', stars: 4, hired: 6, max: 10, cust: 4800, rev: 1380000, wk: 9660000, ads: 90000, wages: 450000, pop: 68, eff: 74, env: 61 };
     s.team = [
       { name: 'Mara K.', pos: 'Manager', man: 4200, int: 3600, end: 2900, eff: 84, add: 0, inact: 0, days: 212, wage: 98000 },
       { name: 'Dev R.', pos: 'Cashier', man: 2100, int: 1800, end: 2600, eff: 71, add: 0, inact: 0, days: 160, wage: 72000 },
@@ -308,11 +406,23 @@ section { display: flex; flex-direction: column; gap: 16px; }
     ];
     s.me = { name: 'You (sample)', man: 2600, int: 1400, end: 3100, add: 0 };
     s.w = { man: 1, int: 3, end: 2 };
+    var D = 864e5, n = Date.now();
+    s.hist = [
+      { t: n - 21 * D, stars: 3, wk: 8200000, pop: 58, eff: 70, env: 66 },
+      { t: n - 14 * D, stars: 4, wk: 9500000, pop: 67, eff: 73, env: 64 },
+      { t: n - 7 * D, stars: 4, wk: 10600000, pop: 74, eff: 75, env: 62 }
+    ];
+    s.specials = [
+      { name: 'Example special A (sample)', stars: 1, jp: 5 },
+      { name: 'Example special B (sample)', stars: 5, jp: 75 },
+      { name: 'Example special C (sample)', stars: 10, jp: 25 }
+    ];
     return s;
   }
   var S = null;
   try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
   if (!S || !S.company || !S.team || !S.me || !S.w) S = sample();
+  S.hist = Array.isArray(S.hist) ? S.hist : []; S.specials = Array.isArray(S.specials) ? S.specials : []; S.stars = S.stars || { gain: 0, loss: 0 }; S.logo = S.logo || ''; S.logoApi = S.logoApi || ''; if (S.company.wk === undefined) S.company.wk = 0; S.looks = Array.isArray(S.looks) ? S.looks : [];
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } }
 
   function getPath(p) { var o = S; p.split('.').forEach(function (k) { o = o[k]; }); return o; }
@@ -485,7 +595,149 @@ section { display: flex; flex-direction: column; gap: 16px; }
     $('#wiHires').max = Math.max(1, m.open);
   }
 
-  function renderAll() { renderCompany(); renderTeam(); renderMe(); renderPlan(); }
+
+  /* ---------- logo, stars, specials ---------- */
+  function dirGain(n) { return n >= 5 ? 50 : ([0, 5, 10, 20, 35][n] || 0); }
+  function starStr(n) { n = Math.max(0, Math.min(10, Math.round(n))); return new Array(n + 1).join('★') + new Array(10 - n + 1).join('☆'); }
+  function weekly() { var c = S.company; return num(c.wk) || num(c.rev) * 7; }
+  function initials(n) { var p = String(n || '?').replace(/\(.*?\)/g, '').trim().split(/\s+/).filter(Boolean); return ((p[0] || '?').charAt(0) + (p[1] ? p[1].charAt(0) : '')).toUpperCase(); }
+  function renderLogo() {
+    var el = $('#logoBox'), src = S.logo || S.logoApi || '';
+    el.textContent = '';
+    if (src && /^(https?:\/\/|data:image\/)/.test(src)) {
+      var img = new Image(); img.alt = 'Company logo';
+      img.onerror = function () { el.textContent = initials(S.company.name); };
+      img.src = src; el.appendChild(img);
+    } else { el.textContent = initials(S.company.name); }
+    $('#cStars').textContent = starStr(num(S.company.stars));
+  }
+  function addSnapshot() {
+    var c = S.company, now = Date.now();
+    var snap = { t: now, stars: num(c.stars), wk: weekly(), pop: num(c.pop), eff: num(c.eff), env: num(c.env) };
+    if (!(snap.wk > 0 || snap.pop > 0 || snap.stars > 0)) return false;
+    var last = S.hist[S.hist.length - 1];
+    if (last && now - last.t < 20 * 36e5) S.hist[S.hist.length - 1] = snap; else S.hist.push(snap);
+    S.hist.sort(function (a, b) { return a.t - b.t; });
+    if (S.hist.length > 26) S.hist = S.hist.slice(-26);
+    return true;
+  }
+  function nextSunday() {
+    var d = new Date(), day = d.getUTCDay();
+    return { t: Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + (day === 0 ? 0 : 7 - day)), today: day === 0 };
+  }
+  function starInfo() {
+    var h = S.hist.slice().sort(function (a, b) { return a.t - b.t; }), ev = [];
+    for (var i = 1; i < h.length; i++) {
+      var d = num(h[i].stars) - num(h[i - 1].stars);
+      if (d !== 0) ev.push({ t: h[i].t, d: d, pop: num(h[i].pop) });
+    }
+    var gain = num(S.stars.gain), loss = num(S.stars.loss);
+    for (var k = ev.length - 1; k >= 0; k--) {
+      if (ev[k].d > 0 && !gain) gain = ev[k].pop;
+      if (ev[k].d < 0 && !loss) loss = ev[k].pop;
+    }
+    return { h: h, ev: ev, gain: gain, loss: loss };
+  }
+  function starWatch(info) {
+    var c = S.company, now = Date.now(), wk = weekly(), pop = num(c.pop), pts = 0, why = [], ref = null, dropped = false;
+    info.h.forEach(function (x) {
+      var age = (now - x.t) / 864e5;
+      if (age >= 5 && (!ref || Math.abs(age - 7) < Math.abs((now - ref.t) / 864e5 - 7))) ref = x;
+    });
+    if (ref && ref.wk > 0 && wk > 0) {
+      var ch = (wk - ref.wk) / ref.wk, pc = Math.abs(ch * 100).toFixed(0);
+      if (ch < -0.15) { pts += 3; dropped = true; why.push(['bad', 'Weekly income is down ' + pc + '% from about a week ago. Stars follow gross profit, so this is the main warning sign.']); }
+      else if (ch < -0.05) { pts += 2; dropped = true; why.push(['warn', 'Weekly income is down ' + pc + '% from about a week ago.']); }
+      else if (ch > 0.05) { pts -= 1; why.push(['good', 'Weekly income is up ' + pc + '% from about a week ago.']); }
+      else { why.push(['', 'Weekly income is about flat compared with a week ago.']); }
+    } else { why.push(['', 'No snapshot from at least five days ago yet. Sync once a day and the trend appears here.']); }
+    if (info.loss > 0 && pop > 0 && pop <= info.loss + 2) { pts += 3; why.push(['bad', 'Popularity ' + pop + '% is within 2 points of ' + info.loss + '%, where you last lost a star.']); }
+    if (info.gain > 0 && pop > 0) {
+      if (pop >= info.gain) { pts -= 1; why.push(['good', 'Popularity ' + pop + '% is at or above ' + info.gain + '%, where you last gained a star.']); }
+      else { pts += 1; why.push(['warn', 'Popularity ' + pop + '% is below ' + info.gain + '%, where you last gained a star.']); }
+    }
+    if (num(c.eff) > 0 && num(c.eff) < 70) { pts += 1; why.push(['warn', 'Efficiency is ' + num(c.eff) + '. Low efficiency cuts income.']); }
+    if (num(c.env) > 0 && num(c.env) < 60) { pts += 1; why.push(['warn', 'Environment is ' + num(c.env) + '. Low environment can cut income by up to a third.']); }
+    var level = pts >= 4 ? ['bad', 'At risk'] : pts >= 2 ? ['warn', 'Watch'] : pts <= -1 ? ['good', 'Rising'] : ['good', 'Looks safe'];
+    if (dropped && level[0] === 'good') level = ['warn', 'Watch'];
+    return { level: level, why: why };
+  }
+  var TAGS = { bad: 'Warning', warn: 'Watch', good: 'Good', '': 'Info' };
+  function renderStars() {
+    var c = S.company, m = metrics(), stars = num(c.stars), pop = num(c.pop), wk = weekly(), info = starInfo(), w = starWatch(info);
+    var ns = nextSunday(), ms = ns.t - Date.now();
+    $('#sNow').textContent = stars + ' of 10';
+    $('#sCount').textContent = ns.today ? 'Today' : Math.floor(ms / 864e5) + 'd ' + Math.floor((ms % 864e5) / 36e5) + 'h';
+    $('#sWk').textContent = wk > 0 ? money(wk) : '–';
+    $('#sPop').textContent = pop > 0 ? pop + '%' : '–';
+    var chip = $('#starChip'); chip.textContent = w.level[1]; chip.className = 'chip ' + w.level[0];
+    $('#sNote').textContent = 'Torn re-ranks companies every Sunday (TCT). ' + (ns.today ? 'That is today.' : 'Next one: ' + new Date(ns.t).toLocaleString([], { weekday: 'long', hour: '2-digit', minute: '2-digit' }) + ' your time.') + ' The star cut-offs are not published, so this is a trend warning, not an exact date.';
+    $('#sReasons').innerHTML = w.why.map(function (x) { return '<div class="item"><div class="chips"><span class="chip ' + x[0] + '">' + TAGS[x[0]] + '</span></div><p>' + esc(x[1]) + '</p></div>'; }).join('');
+
+    var lo = Math.max(0, stars - 1), hi = Math.min(10, stars + 1);
+    function row(label, f) { return '<tr><td>' + label + '</td><td class="n">' + f(lo) + '</td><td class="n">' + f(stars) + '</td><td class="n">' + f(hi) + '</td></tr>'; }
+    $('#sWorth').innerHTML = '<table class="tbl"><tr><th></th><th class="n">Lose one</th><th class="n">Now</th><th class="n">Gain one</th></tr>' +
+      row('Stars', function (n) { return n; }) + row('Job points a day', function (n) { return n; }) +
+      row('Company trains a day', function (n) { return n; }) + row('Director stat gain a day', dirGain) + '</table>';
+
+    var pts = num($('#mvPts').value), out;
+    $('#mvPtsV').textContent = pts;
+    if (wk > 0 && pop > 0) {
+      var best = wk * 100 / pop, need = best * pts / 100, perDay = need / 7;
+      out = '<p>Torn compares your weekly income with the best company of your type. By that rule the best one earns about <b class="mono">' + money(best) + '</b> a week, and one popularity point is worth about <b class="mono">' + money(best / 100) + '</b> a week.</p>' +
+        '<p>Gaining ' + pts + ' points needs about <b class="mono">' + money(need) + '</b> more a week, or <b class="mono">' + money(perDay) + '</b> more a day (' + (need / wk * 100).toFixed(1) + '% more).</p>';
+      if (m.rpe > 0) {
+        var ep = perDay / m.rpe;
+        out += '<p class="muted">At your current revenue per effectiveness point, that is about ' + ep.toFixed(0) + ' more team effectiveness points' + (m.avgEff > 0 ? ', roughly ' + (ep / m.avgEff).toFixed(1) + ' extra staff at your average.' : '.') + '</p>';
+      }
+    } else { out = '<p class="muted">Add weekly revenue and popularity on the Company tab to see this.</p>'; }
+    $('#mvOut').innerHTML = out;
+
+    var lv = [], pen = S.team.filter(function (e) { return num(e.add) > 0 || num(e.inact) > 0; }).length;
+    var mgr = S.team.filter(function (e) { return /manager/i.test(e.pos); }).length;
+    if (m.open > 0) lv.push(['Fill ' + m.open + ' open slot' + (m.open > 1 ? 's' : ''), 'More staff means more sales. This is usually the biggest single gain.']);
+    if (pen) lv.push([pen + ' employee' + (pen > 1 ? 's have' : ' has') + ' a penalty', 'Addiction and inactivity lower efficiency and environment. Fix these first.']);
+    if (num(c.eff) > 0 && num(c.eff) < 100) lv.push(['Raise efficiency from ' + num(c.eff), 'Staff who meet or beat their position\'s stat needs raise it. Train them or move them to a better fit.']);
+    if (num(c.env) > 0 && num(c.env) < 90) lv.push(['Raise environment from ' + num(c.env), 'Cleaners help the most and a bigger staff room helps too. Drug users and inactive staff pull it down.']);
+    if (S.team.length) lv.push(['Managers: you have ' + mgr, 'Each effective manager cuts the missing effectiveness of every employee by 25 percent.']);
+    lv.push(['Keep prices just above cost', 'Pricing slightly above cost and below the recommended retail price wins customers fast. Test a few days at a time.']);
+    lv.push(['Do not cut wages for stars', 'The Torn wiki says employee pay does not affect star gains. Wage cuts help profit only.']);
+    $('#sLevers').innerHTML = lv.map(function (x) { return '<div class="item"><h3>' + esc(x[0]) + '</h3><p class="muted">' + esc(x[1]) + '</p></div>'; }).join('');
+
+    var sp = S.specials.map(function (x, i) { return { x: x, i: i }; }).sort(function (a, b) { return num(a.x.stars) - num(b.x.stars); });
+    var nextReq = null;
+    sp.forEach(function (o) { var r = num(o.x.stars); if (r > stars && (nextReq === null || r < nextReq)) nextReq = r; });
+    $('#spList').innerHTML = sp.length ? sp.map(function (o) {
+      var r = num(o.x.stars), chips;
+      if (r <= stars) chips = '<span class="chip good">Unlocked</span>' + (r === stars ? '<span class="chip warn">Needs ' + r + ' stars to keep</span>' : '');
+      else chips = '<span class="chip">Locked: ' + (r - stars) + ' more star' + (r - stars > 1 ? 's' : '') + '</span>' + (r === nextReq ? '<span class="chip good">Next up</span>' : '');
+      return '<div class="item"><div class="head"><h3>' + esc(o.x.name) + '</h3><span class="mono">' + r + ' stars</span></div><div class="chips">' + chips + (num(o.x.jp) ? '<span class="chip mono">' + num(o.x.jp) + ' JP</span>' : '') + '</div><div class="row"><button type="button" data-sp-del="' + o.i + '">Remove</button></div></div>';
+    }).join('') : '<p class="muted">No specials added yet.</p>';
+
+    var rows = info.h.slice().reverse().map(function (x, i, arr) {
+      var older = arr[i + 1], d = older ? num(x.stars) - num(older.stars) : 0;
+      return '<tr><td>' + new Date(x.t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + '</td><td class="n">' + num(x.stars) + (d > 0 ? ' ▲' : d < 0 ? ' ▼' : '') + '</td><td class="n">' + money(num(x.wk)) + '</td><td class="n">' + num(x.pop) + '%</td></tr>';
+    }).join('');
+    $('#histBox').innerHTML = rows ? '<table class="tbl"><tr><th>Date</th><th class="n">Stars</th><th class="n">Weekly income</th><th class="n">Popularity</th></tr>' + rows + '</table>' : '<p class="muted">No snapshots yet. Sync or save today\'s numbers.</p>';
+  }
+  function deepFindStr(list, names) {
+    for (var i = 0; i < list.length; i++) {
+      var q = [list[i]];
+      while (q.length) {
+        var o = q.shift();
+        if (!o || typeof o !== 'object') continue;
+        var ks = Object.keys(o);
+        for (var j = 0; j < ks.length; j++) {
+          var k = ks[j], v = o[k];
+          if (names.indexOf(k) >= 0 && typeof v === 'string' && /^(https?:\/\/|data:image\/)/.test(v)) return v;
+          if (v && typeof v === 'object') q.push(v);
+        }
+      }
+    }
+    return null;
+  }
+
+  function renderAll() { renderCompany(); renderTeam(); renderMe(); renderPlan(); renderStars(); renderLogo(); renderRecent(); }
 
   /* ---------- inputs ---------- */
   $$('[data-bind]').forEach(function (el) {
@@ -494,14 +746,14 @@ section { display: flex; flex-direction: column; gap: 16px; }
     el.value = (el.hasAttribute('data-text') ? (v || '') : (v === 0 || v === undefined ? '' : v));
     el.addEventListener('input', function () {
       setPath(p, el.hasAttribute('data-text') ? el.value : (el.tagName === 'SELECT' ? num(el.value) : num(el.value)));
-      save(); renderCompany(); renderMe(); renderPlan();
+      save(); renderCompany(); renderMe(); renderPlan(); renderStars(); renderLogo();
     });
   });
   ['wiHires', 'wiBoost', 'wiAds'].forEach(function (id) { $('#' + id).addEventListener('input', renderPlan); });
 
   /* tabs */
   function showTab(name) {
-    ['company', 'team', 'me', 'plan'].forEach(function (n) { $('#tab-' + n).hidden = n !== name; });
+    ['company', 'team', 'stars', 'lookup', 'me', 'plan'].forEach(function (n) { $('#tab-' + n).hidden = n !== name; });
     $$('nav button').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false'); });
     window.scrollTo(0, 0);
   }
@@ -633,6 +885,7 @@ section { display: flex; flex-direction: column; gap: 16px; }
     pick(['rating'], 'stars', function (v) { co.stars = v; });
     pick(['employees_capacity'], 'capacity', function (v) { co.max = v; });
     pick(['daily_revenue'], 'daily revenue', function (v) { co.rev = v; });
+    pick(['weekly_revenue'], 'weekly revenue', function (v) { co.wk = v; });
     pick(['daily_customers'], 'daily customers', function (v) { co.cust = v; });
     pick(['popularity'], 'popularity', function (v) { co.pop = v; });
     pick(['efficiency'], 'efficiency', function (v) { co.eff = v; });
@@ -644,6 +897,9 @@ section { display: flex; flex-direction: column; gap: 16px; }
       var w = team.reduce(function (t, e) { return t + e.wage; }, 0);
       if (w > 0) co.wages = w;
     }
+    if (S.sample) { S.hist = []; S.specials = []; S.logo = ''; }
+    var lg = deepFindStr(ok, ['logo', 'logo_url', 'image', 'image_url', 'icon']); if (lg) S.logoApi = lg;
+    addSnapshot();
     S.sample = false; save();
     $$('[data-bind]').forEach(function (el) { var v = getPath(el.getAttribute('data-bind')); el.value = el.hasAttribute('data-text') ? (v || '') : (v === 0 ? '' : v); });
     renderAll();
@@ -691,7 +947,7 @@ section { display: flex; flex-direction: column; gap: 16px; }
   });
 
   function tornGet(group, sel, key) {
-    return fetch('https://api.torn.com/' + group + '/?selections=' + sel + '&key=' + encodeURIComponent(key))
+    return fetch('https://api.torn.com/' + group + (group.indexOf('/') >= 0 ? '' : '/') + '?selections=' + sel + '&key=' + encodeURIComponent(key))
       .then(function (r) { return r.json(); })
       .catch(function () { return { error: { code: -1, error: 'Could not reach Torn' } }; });
   }
@@ -714,6 +970,156 @@ section { display: flex; flex-direction: column; gap: 16px; }
   }
   $('#syncCompany').addEventListener('click', function () { sync('company'); });
   $('#syncMe').addEventListener('click', function () { sync('me'); });
+
+  /* ---------- lookup of any company ---------- */
+  function money0(n) { return n > 0 ? money(n) : '–'; }
+  function crow(label, a, b, f) {
+    var g = a > 0 && b > 0 ? (a - b) / b * 100 : null;
+    return '<tr><td>' + label + '</td><td class="n">' + (a > 0 ? f(a) : '–') + '</td><td class="n">' + (b > 0 ? f(b) : '–') + '</td><td class="n">' + (g === null ? '–' : (g > 0 ? '+' : '') + g.toFixed(0) + '%') + '</td></tr>';
+  }
+  function renderLook(j) {
+    var c = (j && j.company) || j || {};
+    var raw = c.employees || {};
+    var arr = (Array.isArray(raw) ? raw : Object.keys(raw).map(function (k) { return raw[k]; })).filter(function (e) { return e && typeof e === 'object'; });
+    var hired = num(c.employees_hired) || arr.length, cap = num(c.employees_capacity), stars = num(c.rating);
+    var wkR = num(c.weekly_revenue) || num(c.daily_revenue) * 7, dayR = num(c.daily_revenue) || wkR / 7;
+    var custD = num(c.daily_customers) || num(c.weekly_customers) / 7;
+    var staff = arr.length || hired, tally = {}, inactive = 0, tenure = 0, nowS = Date.now() / 1000;
+    arr.forEach(function (e) {
+      var p = e.position || 'Unknown'; tally[p] = (tally[p] || 0) + 1; tenure += num(e.days_in_company);
+      var ts = e.last_action && num(e.last_action.timestamp);
+      if (ts && nowS - ts > 3 * 86400) inactive++;
+    });
+    var pos = Object.keys(tally).map(function (p) { return p + ' ×' + tally[p]; }).join(', ');
+    var m = metrics(), myStaff = m.staff, myDay = m.rev, myCust = num(S.company.cust);
+    var revPE = staff > 0 ? dayR / staff : 0, perC = custD > 0 ? dayR / custD : 0, cpe = staff > 0 ? custD / staff : 0;
+    var myRevPE = myStaff > 0 ? myDay / myStaff : 0, myPerC = myCust > 0 ? myDay / myCust : 0, myCpe = myStaff > 0 ? myCust / myStaff : 0;
+    var mt = /^Type (\d+)$/.exec(String(S.company.type || '')), sameType = (mt && c.company_type !== undefined) ? mt[1] === String(c.company_type) : null;
+
+    var html = '<div class="panel"><div><h2>' + esc(c.name || 'Company') + '</h2><div class="stars" aria-label="Star rating">' + starStr(stars) + '</div><p class="muted">' +
+      esc([c.company_type !== undefined ? 'Type ' + c.company_type : '', c.days_old !== undefined ? num(c.days_old) + ' days old' : '', c.ID !== undefined ? 'ID ' + c.ID : ''].filter(Boolean).join(' · ')) + '</p></div>' +
+      '<div class="kpis"><div class="kpi"><span class="label">Stars</span><span class="v">' + stars + ' of 10</span></div>' +
+      '<div class="kpi"><span class="label">Staff</span><span class="v">' + hired + (cap ? ' / ' + cap : '') + '</span></div>' +
+      '<div class="kpi"><span class="label">Daily revenue</span><span class="v">' + money0(dayR) + '</span></div>' +
+      '<div class="kpi"><span class="label">Customers a day</span><span class="v">' + (custD > 0 ? fmtN(custD) : '–') + '</span></div></div>' +
+      (pos ? '<p class="muted msg">Positions: ' + esc(pos) + '</p>' : '') +
+      (arr.length ? '<p class="muted msg">Average time in company: ' + (tenure / arr.length).toFixed(0) + ' days. Staff not active for 3 days: ' + inactive + ' of ' + arr.length + '.</p>' : '') + '</div>';
+
+    if (myDay > 0) {
+      html += '<div class="panel"><h3>Them against you</h3><div class="scroll"><table class="tbl"><tr><th>Metric</th><th class="n">Them</th><th class="n">You</th><th class="n">Gap</th></tr>' +
+        crow('Stars', stars, num(S.company.stars), function (n) { return n; }) +
+        crow('Staff', staff, myStaff, function (n) { return n; }) +
+        crow('Daily revenue', dayR, myDay, money) +
+        crow('Revenue per employee', revPE, myRevPE, money) +
+        crow('Customers a day', custD, myCust, fmtN) +
+        crow('Customers per employee', cpe, myCpe, function (n) { return n.toFixed(0); }) +
+        crow('Income per customer', perC, myPerC, money) + '</table></div></div>';
+      var tips = [];
+      if (sameType === false) tips.push(['Different company type', 'Income and positions are not directly comparable, so treat this as a rough guide.']);
+      if (revPE > myRevPE * 1.1 && myRevPE > 0) tips.push(['They earn ' + ((revPE / myRevPE - 1) * 100).toFixed(0) + '% more per employee', 'Check your staff effectiveness, penalties and prices. Better-fitted staff and managers lift sales per head.']);
+      if (cpe > myCpe * 1.1 && myCpe > 0) tips.push(['They serve more customers per employee', 'Look at your advertising and prices. Customers follow low prices and high popularity.']);
+      if (perC > myPerC * 1.1 && myPerC > 0) tips.push(['They earn more per customer', 'They may price higher or sell more per visit. Test small price rises for a few days.']);
+      if (staff > myStaff && num(S.company.max) > myStaff) tips.push(['They run ' + (staff - myStaff) + ' more staff', 'Fill your open slots. More staff is the simplest route to more sales.']);
+      if (stars > num(S.company.stars)) tips.push(['They hold ' + (stars - num(S.company.stars)) + ' more star' + (stars - num(S.company.stars) > 1 ? 's' : ''), 'Stars follow gross profit, so closing the revenue gap above is what moves you up.']);
+      var mine = {}; S.team.forEach(function (e) { mine[String(e.pos || '').toLowerCase()] = 1; });
+      var miss = Object.keys(tally).filter(function (p) { return !mine[p.toLowerCase()]; });
+      if (sameType !== false && S.team.length && miss.length) tips.push(['Positions they use that you do not', miss.join(', ') + '. A different mix is worth testing, because each position trains different stats.']);
+      if (!tips.length) tips.push(['You match or beat them per employee', 'Growth has to come from more staff, better efficiency, or holding stars.']);
+      tips.push(['What this cannot show', 'Torn keeps efficiency, environment and wages private for other companies, so these are hints, not proof.']);
+      html += '<div class="panel"><h3>Changes to try</h3><div class="list">' + tips.map(function (x) { return '<div class="item"><h3>' + esc(x[0]) + '</h3><p class="muted">' + esc(x[1]) + '</p></div>'; }).join('') + '</div></div>';
+    } else {
+      html += '<div class="panel"><p class="muted">Sync your own company on the Company tab to see how you compare.</p></div>';
+    }
+    $('#lkOut').innerHTML = html;
+    if (c.ID !== undefined || c.name) {
+      var id = num(c.ID) || num($('#lkId').value);
+      S.looks = S.looks.filter(function (x) { return x.id !== id; });
+      S.looks.unshift({ id: id, name: c.name || ('Company ' + id), stars: stars, wk: wkR, t: Date.now() });
+      S.looks = S.looks.slice(0, 8); save(); renderRecent();
+    }
+  }
+  function fmtN(n) { return Math.round(n).toLocaleString('en-US'); }
+  function renderRecent() {
+    $('#lkRecent').innerHTML = S.looks.length ? S.looks.map(function (x) {
+      return '<div class="item"><div class="head"><h3>' + esc(x.name) + '</h3><span class="mono">' + num(x.stars) + ' stars</span></div><p class="muted">ID ' + esc(x.id) + (num(x.wk) ? ' · ' + money(num(x.wk)) + ' a week' : '') + ' · ' + new Date(x.t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + '</p><div class="row"><button type="button" data-look="' + esc(x.id) + '">Open again</button></div></div>';
+    }).join('') : '<p class="muted">Nothing yet. Look up a company above.</p>';
+  }
+  function lookCompany(id, msg) {
+    var key = (keyEl.value || '').trim();
+    msg.textContent = 'Contacting Torn...'; msg.className = 'msg muted';
+    tornGet('company/' + id, 'profile', key).then(function (j) {
+      if (j && j.error) { msg.textContent = 'Torn said: ' + (j.error.error || 'error') + '.'; msg.className = 'msg neg'; return; }
+      var c = (j && j.company) || j;
+      if (!c || (!c.name && !c.employees)) { msg.textContent = 'No company found for that ID.'; msg.className = 'msg neg'; return; }
+      msg.textContent = ''; renderLook(j);
+    });
+  }
+  $('#lkGo').addEventListener('click', function () {
+    var msg = $('#lkMsg'), id = num($('#lkId').value), pid = num($('#lkPlayer').value), key = (keyEl.value || '').trim();
+    if (!key) { msg.textContent = 'Add your API key on the Company tab first.'; msg.className = 'msg neg'; return; }
+    if (id) { lookCompany(id, msg); return; }
+    if (pid) {
+      msg.textContent = 'Finding their company...'; msg.className = 'msg muted';
+      tornGet('user/' + pid, 'profile', key).then(function (j) {
+        if (j && j.error) { msg.textContent = 'Torn said: ' + (j.error.error || 'error') + '.'; msg.className = 'msg neg'; return; }
+        var cid = deepFind([j], ['company_id']);
+        if (!cid) { msg.textContent = 'That player has no company listed.'; msg.className = 'msg neg'; return; }
+        $('#lkId').value = cid; lookCompany(cid, msg);
+      });
+      return;
+    }
+    msg.textContent = 'Enter a company ID or a player ID.'; msg.className = 'msg neg';
+  });
+  $('#lkRecent').addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (t.hasAttribute('data-look')) {
+      var key = (keyEl.value || '').trim(), msg = $('#lkMsg');
+      if (!key) { msg.textContent = 'Add your API key on the Company tab first.'; msg.className = 'msg neg'; return; }
+      $('#lkId').value = t.getAttribute('data-look'); lookCompany(num(t.getAttribute('data-look')), msg);
+    }
+  });
+
+  /* logo handlers */
+  $('#logoFile').addEventListener('change', function (ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var cv = document.createElement('canvas'), k = Math.min(1, 160 / Math.max(img.width, img.height));
+        cv.width = Math.max(1, Math.round(img.width * k)); cv.height = Math.max(1, Math.round(img.height * k));
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        S.logo = cv.toDataURL('image/png'); save(); renderLogo();
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  });
+  $('#logoUrl').addEventListener('change', function (ev) {
+    var v = ev.target.value.trim();
+    if (/^https?:\/\//.test(v)) { S.logo = v; save(); renderLogo(); }
+  });
+  $('#logoClear').addEventListener('click', function () { S.logo = ''; S.logoApi = ''; $('#logoUrl').value = ''; $('#logoFile').value = ''; save(); renderLogo(); });
+
+  /* stars handlers */
+  $('#mvPts').addEventListener('input', renderStars);
+  $('#snapNow').addEventListener('click', function () {
+    var ok = addSnapshot(); save(); renderStars();
+    $('#snapMsg').textContent = ok ? 'Saved.' : 'Add some company numbers first.';
+  });
+  $('#spAdd').addEventListener('click', function () {
+    var name = $('#spName').value.trim(), st = num($('#spStars').value);
+    if (!name) { $('#spName').focus(); return; }
+    S.specials.push({ name: name, stars: st, jp: num($('#spJp').value) });
+    $('#spName').value = ''; $('#spStars').value = ''; $('#spJp').value = '';
+    save(); renderStars();
+  });
+  $('#spList').addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (t.hasAttribute('data-sp-del')) { S.specials.splice(num(t.getAttribute('data-sp-del')), 1); save(); renderStars(); }
+  });
+  setInterval(renderStars, 60000);
 
   renderAll();
 })();
