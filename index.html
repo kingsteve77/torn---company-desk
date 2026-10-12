@@ -174,6 +174,7 @@ section { display: flex; flex-direction: column; gap: 16px; }
       <div class="row"><button class="primary" id="syncCompany" type="button">Sync company and staff</button><a class="btn alt" id="openCompany" href="https://api.torn.com/company/?selections=profile,employees&amp;key=YOURKEY" target="_blank" rel="noopener">Open data to copy</a></div>
       <textarea id="importCompany" placeholder='Only if sync is blocked, paste the data here'></textarea>
       <div class="row"><button class="primary" id="doImportCompany" type="button">Import company and staff</button><span class="msg" id="msgCompany" role="status"></span></div>
+      <details><summary>What Torn sent</summary><div><p class="muted msg">Field names only, no values. Send me a screenshot of this if something is missing.</p><pre id="dbg" class="mono" style="white-space:pre-wrap;font-size:12px;margin:0;overflow-wrap:anywhere"></pre></div></details>
     </div>
   </section>
 
@@ -559,36 +560,104 @@ section { display: flex; flex-direction: column; gap: 16px; }
     if (j && j.error) return { err: 'Torn answered with an error: ' + ((j.error && j.error.error) || 'check the key and permissions') + '.' };
     return { j: j };
   }
+  function deepFind(list, names) {
+    for (var i = 0; i < list.length; i++) {
+      var q = [list[i]];
+      while (q.length) {
+        var o = q.shift();
+        if (!o || typeof o !== 'object') continue;
+        var ks = Object.keys(o);
+        for (var j = 0; j < ks.length; j++) {
+          var k = ks[j], v = o[k];
+          if (names.indexOf(k) >= 0 && (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '' && isFinite(parseFloat(v))))) return num(v);
+          if (v && typeof v === 'object') q.push(v);
+        }
+      }
+    }
+    return null;
+  }
+  function findEmployees(list) {
+    var best = null, bestScore = -1;
+    list.forEach(function (root) {
+      var q = [root];
+      while (q.length) {
+        var o = q.shift();
+        if (!o || typeof o !== 'object') continue;
+        Object.keys(o).forEach(function (k) {
+          var v = o[k];
+          if ((k === 'employees' || k === 'company_employees') && v && typeof v === 'object') {
+            var arr = Array.isArray(v) ? v : Object.keys(v).map(function (id) { return v[id]; });
+            arr = arr.filter(function (e) { return e && typeof e === 'object'; });
+            var score = arr.reduce(function (t, e) { return t + (e.effectiveness !== undefined ? 3 : 0) + (e.wage !== undefined ? 1 : 0) + (e.manual_labor !== undefined ? 1 : 0); }, 0);
+            if (arr.length && (score > bestScore || (score === bestScore && best && arr.length > best.length))) { best = arr; bestScore = score; }
+          }
+          if (v && typeof v === 'object') q.push(v);
+        });
+      }
+    });
+    return best || [];
+  }
+  function mapEmp(e) {
+    var ef = e.effectiveness, eff = 0, add = 0, inact = 0;
+    if (ef && typeof ef === 'object') {
+      add = Math.abs(num(ef.addiction)); inact = Math.abs(num(ef.inactivity));
+      eff = ef.total !== undefined ? num(ef.total) : Object.keys(ef).reduce(function (t, k) { return t + num(ef[k]); }, 0);
+    } else if (ef !== undefined) { eff = num(ef); }
+    return { name: e.name || 'Unknown', pos: e.position || '', man: num(e.manual_labor), int: num(e.intelligence), end: num(e.endurance), eff: eff, add: add, inact: inact, days: num(e.days_in_company), wage: num(e.wage) };
+  }
+  function shape(o, d) {
+    if (!o || typeof o !== 'object') return typeof o;
+    if (d <= 0) return '...';
+    var keys = Object.keys(o);
+    if (keys.length && keys.every(function (k) { return /^\d+$/.test(k); })) return keys.length + ' entries of ' + JSON.stringify(shape(o[keys[0]], d - 1));
+    var out = {};
+    keys.forEach(function (k) { out[k] = shape(o[k], d - 1); });
+    return out;
+  }
+
+  var SEL = ['profile', 'employees', 'detailed'];
+  function ingestCompany(list, msg) {
+    var errs = [], ok = [], dbg = [];
+    list.forEach(function (j, i) {
+      var label = list.length === 3 ? SEL[i] : 'pasted data';
+      if (j && j.error) { errs.push(label + ': ' + ((j.error && j.error.error) || 'error')); dbg.push(label + ': error'); }
+      else if (j && typeof j === 'object') { ok.push(j); dbg.push(label + ': ' + JSON.stringify(shape(j, 3), null, 1)); }
+    });
+    var dbgEl = $('#dbg'); if (dbgEl) dbgEl.textContent = dbg.join('\n\n');
+    if (!ok.length) { msg.textContent = 'Torn refused the request: ' + (errs[0] || 'no data') + '.'; msg.className = 'msg neg'; return; }
+    var co = S.company, found = [], missing = [];
+    function pick(names, label, set) { var v = deepFind(ok, names); if (v === null) missing.push(label); else { set(v); found.push(label); } }
+    ok.forEach(function (o) { if (o.company && typeof o.company.name === 'string') co.name = o.company.name; });
+    var ct = null; ok.forEach(function (o) { if (o.company && o.company.company_type !== undefined && ct === null) ct = o.company.company_type; });
+    if (ct !== null) co.type = typeof ct === 'string' ? ct : 'Type ' + ct;
+    pick(['rating'], 'stars', function (v) { co.stars = v; });
+    pick(['employees_capacity'], 'capacity', function (v) { co.max = v; });
+    pick(['daily_revenue'], 'daily revenue', function (v) { co.rev = v; });
+    pick(['daily_customers'], 'daily customers', function (v) { co.cust = v; });
+    pick(['popularity'], 'popularity', function (v) { co.pop = v; });
+    pick(['efficiency'], 'efficiency', function (v) { co.eff = v; });
+    pick(['environment'], 'environment', function (v) { co.env = v; });
+    pick(['advertisement_budget'], 'advertising', function (v) { co.ads = v; });
+    var team = findEmployees(ok).map(mapEmp);
+    if (team.length) {
+      S.team = team; co.hired = team.length;
+      var w = team.reduce(function (t, e) { return t + e.wage; }, 0);
+      if (w > 0) co.wages = w;
+    }
+    S.sample = false; save();
+    $$('[data-bind]').forEach(function (el) { var v = getPath(el.getAttribute('data-bind')); el.value = el.hasAttribute('data-text') ? (v || '') : (v === 0 ? '' : v); });
+    renderAll();
+    var hasEff = team.some(function (e) { return e.eff > 0; });
+    var txt = 'Imported ' + team.length + ' staff.';
+    if (missing.length) txt += ' Torn did not send: ' + missing.join(', ') + '. Type them in above.';
+    if (team.length && !hasEff) txt += ' Staff effectiveness was not sent, so profit moves cannot be ranked. Use an API key from the company director.';
+    if (errs.length) txt += ' Torn said: ' + errs.join('; ') + '.';
+    msg.textContent = txt; msg.className = 'msg ' + (missing.length || errs.length || (team.length && !hasEff) ? 'muted' : 'pos');
+  }
   $('#doImportCompany').addEventListener('click', function () {
     var msg = $('#msgCompany'), r = parseJSON($('#importCompany').value);
     if (r.err) { msg.textContent = r.err; msg.className = 'msg neg'; return; }
-    var c = r.j.company || r.j;
-    var raw = c.employees || r.j.company_employees || {};
-    var arr = Array.isArray(raw) ? raw : Object.keys(raw).map(function (k) { return raw[k]; });
-    var team = arr.map(function (e) {
-      var ef = e.effectiveness || {};
-      return { name: e.name || 'Unknown', pos: e.position || '', man: num(e.manual_labor), int: num(e.intelligence), end: num(e.endurance),
-        eff: num(ef.total), add: Math.abs(num(ef.addiction)), inact: Math.abs(num(ef.inactivity)), days: num(e.days_in_company), wage: num(e.wage) };
-    });
-    if (!c.name && !team.length && !c.daily_revenue) { msg.textContent = 'No company data found. Use the profile and employees selections in the address.'; msg.className = 'msg neg'; return; }
-    S.sample = false;
-    var co = S.company;
-    co.name = c.name || co.name;
-    co.type = typeof c.company_type === 'string' ? c.company_type : (c.company_type ? 'Type ' + c.company_type : co.type);
-    if (c.rating !== undefined) co.stars = num(c.rating);
-    if (c.employees_capacity !== undefined) co.max = num(c.employees_capacity);
-    if (c.daily_revenue !== undefined) co.rev = num(c.daily_revenue);
-    if (c.daily_customers !== undefined) co.cust = num(c.daily_customers);
-    if (c.popularity !== undefined) co.pop = num(c.popularity);
-    if (c.efficiency !== undefined) co.eff = num(c.efficiency);
-    if (c.environment !== undefined) co.env = num(c.environment);
-    if (c.advertisement_budget !== undefined) co.ads = num(c.advertisement_budget);
-    if (team.length) { S.team = team; co.hired = team.length; co.wages = sum(team, function (e) { return e.wage; }); }
-    else if (c.employees_hired !== undefined) co.hired = num(c.employees_hired);
-    save();
-    $$('[data-bind]').forEach(function (el) { var v = getPath(el.getAttribute('data-bind')); el.value = el.hasAttribute('data-text') ? (v || '') : (v === 0 ? '' : v); });
-    renderAll();
-    msg.textContent = 'Imported ' + (team.length ? team.length + ' staff and ' : '') + 'company numbers. Check the Plan tab.'; msg.className = 'msg pos';
+    ingestCompany([r.j], msg);
     $('#importCompany').value = '';
   });
   $('#doImportMe').addEventListener('click', function () {
@@ -621,17 +690,27 @@ section { display: flex; flex-direction: column; gap: 16px; }
     $('#' + p[0]).addEventListener('paste', function () { setTimeout(function () { $('#' + p[1]).click(); }, 50); });
   });
 
+  function tornGet(group, sel, key) {
+    return fetch('https://api.torn.com/' + group + '/?selections=' + sel + '&key=' + encodeURIComponent(key))
+      .then(function (r) { return r.json(); })
+      .catch(function () { return { error: { code: -1, error: 'Could not reach Torn' } }; });
+  }
   function sync(kind) {
     var key = (keyEl.value || '').trim();
     var isCo = kind === 'company';
     var msg = $(isCo ? '#msgCompany' : '#msgMe');
     if (!key) { msg.textContent = 'Add your API key first.'; msg.className = 'msg neg'; return; }
     msg.textContent = 'Contacting Torn...'; msg.className = 'msg muted';
-    var u = isCo ? 'https://api.torn.com/company/?selections=profile,employees&key=' : 'https://api.torn.com/user/?selections=profile,workstats&key=';
-    fetch(u + encodeURIComponent(key)).then(function (r) { return r.text(); }).then(function (t) {
-      $(isCo ? '#importCompany' : '#importMe').value = t;
-      $(isCo ? '#doImportCompany' : '#doImportMe').click();
-    }).catch(function () { msg.textContent = 'Could not reach Torn. Check your connection, or use Open data to copy and paste it here.'; msg.className = 'msg neg'; });
+    if (isCo) {
+      Promise.all([tornGet('company', 'profile', key), tornGet('company', 'employees', key), tornGet('company', 'detailed', key)])
+        .then(function (res) { ingestCompany(res, msg); });
+    } else {
+      tornGet('user', 'profile,workstats', key).then(function (j) {
+        if (j && j.error) { msg.textContent = 'Torn said: ' + (j.error.error || 'error') + '.'; msg.className = 'msg neg'; return; }
+        $('#importMe').value = JSON.stringify(j);
+        $('#doImportMe').click();
+      });
+    }
   }
   $('#syncCompany').addEventListener('click', function () { sync('company'); });
   $('#syncMe').addEventListener('click', function () { sync('me'); });
